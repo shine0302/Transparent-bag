@@ -48,7 +48,7 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   $ cd cleargrasp
   ~~~  
   
-  3.pipの依存関係をインストール
+  3.pipの依存関係をインストール  
   requirements.txt内のopencvのバージョンが古いため更新  
   (opencv-python == 4.1.1.26→opencv-python==4.5.1.48)
   ~~~
