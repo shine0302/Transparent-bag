@@ -44,10 +44,14 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   ~~~
   
   2.ディレクトリへ移動
-  ~~~$ cd cleargrasp~~~  
+  ~~~
+  $ cd cleargrasp
+  ~~~  
   
   3.pipの依存関係をインストール
+  ~~~
   pip3 install -r requirements.txt
+  ~~~
   更新opencvのバージョンが古いため
   
   
