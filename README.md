@@ -49,7 +49,7 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   ~~~  
   
   3.pipの依存関係をインストール
-  requirements.txt内のopencvのバージョンが古いため更新の(opencv-python == 4.1.1.26→opencv-python==4.5.1.48)
+  requirements.txt内のopencvのバージョンが古いため更新(opencv-python == 4.1.1.26→opencv-python==4.5.1.48)
   
   ~~~
   pip3 install -r requirements.txt
@@ -58,7 +58,7 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   
   
   
-  4.https://sites.google.com/view/cleargrasp/data　より必要なデータをダウンロード(容量に注意)  
+  4.(https://sites.google.com/view/cleargrasp/data)より必要なデータをダウンロード(容量に注意)  
   Model checkpoints(必須）をCleargrasp/Data/clearagraspの中にダウンロード  
   
   5.  
