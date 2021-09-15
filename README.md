@@ -37,15 +37,20 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
 ~~~
 
 ５．ClearGraspの準備
-~~~
+
   1.リポジトリのクローン
+  ~~~
   $ git clone https://github.com/Shreeyak/cleargrasp.git 
+  ~~~
   
   2.ディレクトリへ移動
-  $ cd cleargrasp  
+  ~~~$ cd cleargrasp~~~  
   
   3.pipの依存関係をインストール
   pip3 install -r requirements.txt
+  更新opencvのバージョンが古いため
+  
+  
   
   4.https://sites.google.com/view/cleargrasp/data　より必要なデータをダウンロード(容量に注意)  
   Model checkpoints(必須）をCleargrasp/Data/clearagraspの中にダウンロード  
