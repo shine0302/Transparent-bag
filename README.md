@@ -49,10 +49,12 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   ~~~  
   
   3.pipの依存関係をインストール
+  requirements.txt内のopencvのバージョンが古いため更新の(opencv-python == 4.1.1.26→opencv-python==4.5.1.48)
+  
   ~~~
   pip3 install -r requirements.txt
   ~~~
-  更新opencvのバージョンが古いため
+  
   
   
   
