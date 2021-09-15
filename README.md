@@ -19,7 +19,12 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   $ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE  
   ２．サーバーをリポジトリのリストに登録
   sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u  
-  ３．
+  3.ライブラリのインストール
+  $ sudo apt-get install librealsense2-dkms               
+  $ sudo apt-get install librealsense2-utils
+  4. 開発者用ツール＆デバックツールのインストール
+  $ sudo apt-get install librealsense2-dev               
+  $ sudo apt-get install librealsense2-dbg
 ~~~
 
 ５．ClearGraspの準備
@@ -27,10 +32,5 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   1.$ git clone https://github.com/Shreeyak/cleargrasp.git  
   2.ディレクトリへ移動
   $ cd cleargrasp                                        
-  3.ライブラリのインストール
-  $ sudo apt-get install librealsense2-dkms               
-  $ sudo apt-get install librealsense2-utils
-  4. 開発者用ツール＆デバックツールのインストール
-  $ sudo apt-get install librealsense2-dev               
-  $ sudo apt-get install librealsense2-dbg
+  
 ~~~
