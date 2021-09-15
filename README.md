@@ -2,14 +2,14 @@
 
 ## ClearGraspの設定
 ClearGraspのページに記載されている方法ではうまくいかなかったためいくつかの変更を加えました  
-（変更箇所には星☆をつけてます)　　
+（変更箇所には星☆をつけてます)　　　
 1．実行環境：windows10,ubutu18.04,VirtualBox16.1.10,Intel RealsenseD435  
 2．参考ページ
 [ClearGrasp](https://github.com/Shreeyak/cleargrasp) (https://github.com/Shreeyak/cleargrasp)  
 
 3．諸々設定 
 ~~~
-    $ sudo apt-get install libhdf5-100 libhdf5-serial-dev libhdf5-dev libhdf5-cpp-100　　　　（☆）#星は要りません  
+    $ sudo apt-get install libhdf5-100 libhdf5-serial-dev libhdf5-dev libhdf5-cpp-100　　　　（☆） 
     $ sudo apt install libopenexr-dev zlib1g-dev openexr  
     $ sudo apt install xorg-dev  
     $ sudo apt install libglfw3-dev  
