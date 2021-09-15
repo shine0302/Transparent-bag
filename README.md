@@ -26,6 +26,10 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
 ~~~
   1.$ git clone https://github.com/Shreeyak/cleargrasp.git  #gitからClearGraspのディレクトリを持ってくる
   2.$ cd cleargrasp                                         #ディレクトリへ移動
-  3.$ sudo apt-get install librealsense2-dkms
-  4.$ sudo apt-get install librealsense2-utils
+  3.ライブラリのインストール
+  $ sudo apt-get install librealsense2-dkms               
+  $ sudo apt-get install librealsense2-utils
+  4. #開発者用ツール＆デバックツールのインストール
+  $ sudo apt-get install librealsense2-dev               
+  $ sudo apt-get install librealsense2-dbg
 ~~~
