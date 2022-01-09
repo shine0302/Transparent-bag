@@ -16,7 +16,7 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
     $ sudo apt install libglfw3-dev  
 ~~~    
 4.LibRealSenseのインストール  
-詳細については公式ページを参照してください  
+詳細については公式の説明を参照してください  
 [LibRealSense公式ページ](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md)  
 ~~~
   1.サーバー公開鍵の設定  
