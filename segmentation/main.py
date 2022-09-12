@@ -9,10 +9,10 @@ import debugpy
 
 parser = argparse.ArgumentParser()
 parser.add_argument('camera', nargs='?', default="examples/resources/camera_positions", help="Path to the camera file")
-parser.add_argument('scene', nargs='?', default="/../../home/kattun/BlenderProc/semantic_segmentation/test_0909.obj", help="Path to the scene.obj file")
+parser.add_argument('scene', nargs='?', default="/../../home/kattun/BlenderProc/Transparent-bag/segmentation/test_0909.obj", help="Path to the scene.obj file")
 #parser.add_argument('cc_textures_path', nargs='?', default="../../../../media/kattun/HD-PGF-A/Assets/haven_hdri/textures", help="Path to downloaded cc textures")
-parser.add_argument('output_dir', nargs='?', default="semantic_segmentation/output/color", help="Path to where the final files, will be saved")
-parser.add_argument('segmaps_output_dir', nargs='?', default="semantic_segmentation/output/segmaps", help="Path to where the final files, will be saved")
+parser.add_argument('output_dir', nargs='?', default="transparent-bag/segmentation/output/color", help="Path to where the final files, will be saved")
+parser.add_argument('segmaps_output_dir', nargs='?', default="Transparent-bag/segmentation/output/segmaps", help="Path to where the final files, will be saved")
 parser.add_argument('haven_textures_path', nargs='?', default="/../../media/kattun/HD-PGF-A/Assets/haven_hdri/textures", help="The folder where the `hdri` folder can be found, to load an world environment")
 args = parser.parse_args()
 
