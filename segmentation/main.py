@@ -5,13 +5,14 @@ import numpy as np
 import os
 from blenderproc.scripts.saveAsImg import save_array_as_image
 import debugpy
+import bpy
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('camera', nargs='?', default="examples/resources/camera_positions", help="Path to the camera file")
-parser.add_argument('scene', nargs='?', default="/../../home/kattun/BlenderProc/Transparent-bag/segmentation/test_0909.obj", help="Path to the scene.obj file")
+parser.add_argument('scene', nargs='?', default="Transparent-bag/segmentation/env_model/test_0909.obj", help="Path to the scene.obj file")
 #parser.add_argument('cc_textures_path', nargs='?', default="../../../../media/kattun/HD-PGF-A/Assets/haven_hdri/textures", help="Path to downloaded cc textures")
-parser.add_argument('output_dir', nargs='?', default="transparent-bag/segmentation/output/color", help="Path to where the final files, will be saved")
+parser.add_argument('output_dir', nargs='?', default="Transparent-bag/segmentation/output/color", help="Path to where the final files, will be saved")
 parser.add_argument('segmaps_output_dir', nargs='?', default="Transparent-bag/segmentation/output/segmaps", help="Path to where the final files, will be saved")
 parser.add_argument('haven_textures_path', nargs='?', default="/../../media/kattun/HD-PGF-A/Assets/haven_hdri/textures", help="The folder where the `hdri` folder can be found, to load an world environment")
 args = parser.parse_args()
@@ -20,6 +21,25 @@ bproc.init()
 
 # load the objects into the scene
 objs = bproc.loader.load_obj(args.scene)
+
+import bpy
+object =  list(bpy.data.objects)
+print(object[1])
+
+object_name = bpy.data.objects.keys()
+lens = len(object_name) 
+for i in range(0,lens):
+    if "bag" in str(object_name[i]):
+        obj = bpy.data.objects[object_name[i]]
+        obj["category_id"] = 1
+        print(obj["category_id"] )
+    
+    else :
+        obj = bpy.data.objects[object_name[i]]
+        obj["category_id"] = 0
+        print(obj["category_id"] )
+
+
 
 # create room
 room_planes = [bproc.object.create_primitive('PLANE', scale=[20, 20, 1]),
@@ -30,18 +50,16 @@ room_planes = [bproc.object.create_primitive('PLANE', scale=[20, 20, 1]),
 for plane in room_planes:
     plane.enable_rigidbody(False, collision_shape='BOX', friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
     
-# Haven Texture and assign to room planes
-haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
-random_haven_texture = np.random.choice(haven_textures)
-for plane in room_planes:
-    plane.replace_materials(random_haven_texture)
+
 
 
 # define a light and set its location and energy level
 light = bproc.types.Light()
 light.set_type("POINT")
-light.set_location([5, -5, 10])
-light.set_energy(10000)
+l_location = np.random.uniform([-5,-5,10],[5,5,20])
+light.set_location(l_location)
+l_random_energy =  np.random.randint(5000,10000)
+light.set_energy(l_random_energy)
 
 # define the camera intrinsics
 bproc.camera.set_resolution(1920, 1080)
@@ -67,10 +85,13 @@ for i in range(2):
     random_haven_texture = np.random.choice(haven_textures)
     for plane in room_planes:
         plane.replace_materials(random_haven_texture)
-    
+        
 
 # activate depth rendering
 #bproc.renderer.enable_depth_output(activate_antialiasing=False)
+
+# Set max samples for quick rendering
+bproc.renderer.set_max_amount_of_samples(2)
 
 # render the whole pipeline
 data = bproc.renderer.render()
