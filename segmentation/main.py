@@ -6,6 +6,7 @@ import os
 from blenderproc.scripts.saveAsImg import save_array_as_image
 import debugpy
 import bpy
+import random
 
 
 parser = argparse.ArgumentParser()
@@ -22,13 +23,11 @@ bproc.init()
 # load the objects into the scene
 objs = bproc.loader.load_obj(args.scene)
 
-import bpy
 object =  list(bpy.data.objects)
 print(object[1])
 
 object_name = bpy.data.objects.keys()
-lens = len(object_name) 
-for i in range(0,lens):
+for i in range(0,len(object_name)):
     if "bag" in str(object_name[i]):
         obj = bpy.data.objects[object_name[i]]
         obj["category_id"] = 1
@@ -42,24 +41,24 @@ for i in range(0,lens):
 
 
 # create room
-room_planes = [bproc.object.create_primitive('PLANE', scale=[20, 20, 1]),
-               bproc.object.create_primitive('PLANE', scale=[20, 20, 1], location=[0, -20, 20], rotation=[-1.570796, 0, 0]),
-               bproc.object.create_primitive('PLANE', scale=[20, 20, 1], location=[0, 20, 20], rotation=[1.570796, 0, 0]),
-               bproc.object.create_primitive('PLANE', scale=[20, 20, 1], location=[20, 0, 20], rotation=[0, -1.570796, 0]),
-               bproc.object.create_primitive('PLANE', scale=[20, 20, 1], location=[-20, 0, 20], rotation=[0, 1.570796, 0])]
+room_planes = [bproc.object.create_primitive('PLANE', scale=[30, 30, 1]),
+               bproc.object.create_primitive('PLANE', scale=[30, 30, 1], location=[0, -30, 30], rotation=[-1.570796, 0, 0]),
+               bproc.object.create_primitive('PLANE', scale=[30, 30, 1], location=[0, 30, 30], rotation=[1.570796, 0, 0]),
+               bproc.object.create_primitive('PLANE', scale=[30, 30, 1], location=[30, 0, 30], rotation=[0, -1.570796, 0]),
+               bproc.object.create_primitive('PLANE', scale=[30, 30, 1], location=[-30, 0, 30], rotation=[0, 1.570796, 0])]
 for plane in room_planes:
     plane.enable_rigidbody(False, collision_shape='BOX', friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
     
 
 
-
-# define a light and set its location and energy level
-light = bproc.types.Light()
-light.set_type("POINT")
-l_location = np.random.uniform([-5,-5,10],[5,5,20])
-light.set_location(l_location)
-l_random_energy =  np.random.randint(5000,10000)
-light.set_energy(l_random_energy)
+for n in range(random.randint(1,2)):
+    # define a light and set its location and energy level
+    light = bproc.types.Light()
+    light.set_type("POINT")
+    light.set_location(np.random.uniform([-20,-20,10],[20,20,20]))
+    # Randomly set the color and energy
+    light.set_color(np.random.uniform([0.5, 0.5, 0.5], [1, 1, 1]))
+    light.set_energy(random.uniform(5000, 10000))
 
 # define the camera intrinsics
 bproc.camera.set_resolution(1920, 1080)
@@ -68,9 +67,15 @@ bproc.camera.set_resolution(1920, 1080)
 poi = bproc.object.compute_poi(objs)
 
 # five camera poses
-for i in range(2):
+for i in range(5):
+    # Haven Texture and assign to room planes
+    haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
+    random_h_tex = np.random.choice(haven_textures)
+    for plane in room_planes:
+        plane.replace_materials(random_h_tex)
+        
     # Sample random camera location above objects
-    location = np.random.uniform([-20, -20, 5], [20, 20, 20])
+    location = np.random.uniform([-20, -20, 10], [20, 20, 20])
     # Compute rotation based on vector going from location towards poi
     poi_drift = bproc.sampler.random_walk(total_length = 25, dims = 3, step_magnitude = 0.005, 
                                       window_size = 5, interval = [-0.03, 0.03], distribution = 'uniform')
@@ -79,19 +84,14 @@ for i in range(2):
     # Add homog cam pose based on location an rotation
     cam2world_matrix = bproc.math.build_transformation_mat(location, rotation_matrix)
     bproc.camera.add_camera_pose(cam2world_matrix)
-    
-    # Haven Texture and assign to room planes
-    haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
-    random_haven_texture = np.random.choice(haven_textures)
-    for plane in room_planes:
-        plane.replace_materials(random_haven_texture)
-        
+   
 
 # activate depth rendering
 #bproc.renderer.enable_depth_output(activate_antialiasing=False)
 
+bproc.renderer.set_light_bounces(max_bounces=200, diffuse_bounces=200, glossy_bounces=200, transmission_bounces=200, transparent_max_bounces=200)
 # Set max samples for quick rendering
-bproc.renderer.set_max_amount_of_samples(2)
+bproc.renderer.set_max_amount_of_samples(10)
 
 # render the whole pipeline
 data = bproc.renderer.render()
