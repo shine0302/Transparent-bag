@@ -30,12 +30,12 @@ object_name = bpy.data.objects.keys()
 for i in range(0,len(object_name)):
     if "bag" in str(object_name[i]):
         obj = bpy.data.objects[object_name[i]]
-        obj["category_id"] = 1
+        obj.set_cp("category_id", 1)
         print(obj["category_id"] )
     
     else :
         obj = bpy.data.objects[object_name[i]]
-        obj["category_id"] = 0
+        obj.set_cp("category_id", 0)
         print(obj["category_id"] )
 
 
