@@ -15,30 +15,25 @@ parser.add_argument('scene', nargs='?', default="Transparent-bag/segmentation/en
 #parser.add_argument('cc_textures_path', nargs='?', default="../../../../media/kattun/HD-PGF-A/Assets/haven_hdri/textures", help="Path to downloaded cc textures")
 parser.add_argument('output_dir', nargs='?', default="Transparent-bag/segmentation/output/color", help="Path to where the final files, will be saved")
 parser.add_argument('segmaps_output_dir', nargs='?', default="Transparent-bag/segmentation/output/segmaps", help="Path to where the final files, will be saved")
+parser.add_argument('output_hdf_dir', nargs='?', default="Transparent-bag/segmentation/output/hdf", help="Path to where the final files, will be saved")
 parser.add_argument('haven_textures_path', nargs='?', default="/../../media/kattun/HD-PGF-A/Assets/haven_hdri/textures", help="The folder where the `hdri` folder can be found, to load an world environment")
 args = parser.parse_args()
 
 bproc.init()
 
-# load the objects into the scene
+ # load the objects into the scene
 objs = bproc.loader.load_obj(args.scene)
-
+#id setting
 object =  list(bpy.data.objects)
-print(object[1])
-
 object_name = bpy.data.objects.keys()
 for i in range(0,len(object_name)):
     if "bag" in str(object_name[i]):
         obj = bpy.data.objects[object_name[i]]
-        obj.set_cp("category_id", 1)
-        print(obj["category_id"] )
+        obj["category_id"] = 1
     
     else :
         obj = bpy.data.objects[object_name[i]]
-        obj.set_cp("category_id", 0)
-        print(obj["category_id"] )
-
-
+        obj["category_id"] = 0
 
 # create room
 room_planes = [bproc.object.create_primitive('PLANE', scale=[30, 30, 1]),
@@ -48,8 +43,12 @@ room_planes = [bproc.object.create_primitive('PLANE', scale=[30, 30, 1]),
                bproc.object.create_primitive('PLANE', scale=[30, 30, 1], location=[-30, 0, 30], rotation=[0, 1.570796, 0])]
 for plane in room_planes:
     plane.enable_rigidbody(False, collision_shape='BOX', friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
-    
 
+# Haven Texture and assign to room planes
+haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
+random_h_tex = np.random.choice(haven_textures)
+for plane in room_planes:
+        plane.replace_materials(random_h_tex)
 
 for n in range(random.randint(1,2)):
     # define a light and set its location and energy level
@@ -60,19 +59,15 @@ for n in range(random.randint(1,2)):
     light.set_color(np.random.uniform([0.5, 0.5, 0.5], [1, 1, 1]))
     light.set_energy(random.uniform(5000, 10000))
 
-# define the camera intrinsics
-bproc.camera.set_resolution(1920, 1080)
 
-# Find point of interest, all cam poses should look towards it
-poi = bproc.object.compute_poi(objs)
 
 # five camera poses
 for i in range(5):
-    # Haven Texture and assign to room planes
-    haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
-    random_h_tex = np.random.choice(haven_textures)
-    for plane in room_planes:
-        plane.replace_materials(random_h_tex)
+    # define the camera intrinsics
+    bproc.camera.set_resolution(1920, 1080)
+
+    # Find point of interest, all cam poses should look towards it
+    poi = bproc.object.compute_poi(objs)
         
     # Sample random camera location above objects
     location = np.random.uniform([-20, -20, 10], [20, 20, 20])
@@ -84,23 +79,24 @@ for i in range(5):
     # Add homog cam pose based on location an rotation
     cam2world_matrix = bproc.math.build_transformation_mat(location, rotation_matrix)
     bproc.camera.add_camera_pose(cam2world_matrix)
-   
-
+    
 # activate depth rendering
 #bproc.renderer.enable_depth_output(activate_antialiasing=False)
 
 bproc.renderer.set_light_bounces(max_bounces=200, diffuse_bounces=200, glossy_bounces=200, transmission_bounces=200, transparent_max_bounces=200)
 # Set max samples for quick rendering
-bproc.renderer.set_max_amount_of_samples(10)
+bproc.renderer.set_max_amount_of_samples(2)
 
 # render the whole pipeline
 data = bproc.renderer.render()
+
+   
 
 # Render segmentation masks (per class and per instance)
 data.update(bproc.renderer.render_segmap(map_by=["class", "instance", "name"]))
 
 # write the data to a .hdf5 container
-#bproc.writer.write_hdf5(args.output_dir, data)
+bproc.writer.write_hdf5(args.output_hdf_dir, data)
 
 #output png image
 for index, image in enumerate(data["colors"]):
