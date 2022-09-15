@@ -23,6 +23,7 @@ bproc.init()
 
  # load the objects into the scene
 objs = bproc.loader.load_obj(args.scene)
+
 #id setting
 object =  list(bpy.data.objects)
 object_name = bpy.data.objects.keys()
@@ -44,20 +45,6 @@ room_planes = [bproc.object.create_primitive('PLANE', scale=[30, 30, 1]),
 for plane in room_planes:
     plane.enable_rigidbody(False, collision_shape='BOX', friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
 
-# Haven Texture and assign to room planes
-haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
-random_h_tex = np.random.choice(haven_textures)
-for plane in room_planes:
-        plane.replace_materials(random_h_tex)
-
-for n in range(random.randint(1,2)):
-    # define a light and set its location and energy level
-    light = bproc.types.Light()
-    light.set_type("POINT")
-    light.set_location(np.random.uniform([-20,-20,10],[20,20,20]))
-    # Randomly set the color and energy
-    light.set_color(np.random.uniform([0.5, 0.5, 0.5], [1, 1, 1]))
-    light.set_energy(random.uniform(5000, 10000))
 
 
 
@@ -80,27 +67,42 @@ for i in range(5):
     cam2world_matrix = bproc.math.build_transformation_mat(location, rotation_matrix)
     bproc.camera.add_camera_pose(cam2world_matrix)
     
-# activate depth rendering
-#bproc.renderer.enable_depth_output(activate_antialiasing=False)
+    # Haven Texture and assign to room planes
+    haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
+    random_h_tex = np.random.choice(haven_textures)
+    for plane in room_planes:
+            plane.replace_materials(random_h_tex)
 
-bproc.renderer.set_light_bounces(max_bounces=200, diffuse_bounces=200, glossy_bounces=200, transmission_bounces=200, transparent_max_bounces=200)
-# Set max samples for quick rendering
-bproc.renderer.set_max_amount_of_samples(2)
+    for n in range(random.randint(1,2)):
+        # define a light and set its location and energy level
+        light = bproc.types.Light()
+        light.set_type("POINT")
+        light.set_location(np.random.uniform([-20,-20,10],[20,20,20]))
+        # Randomly set the color and energy
+        light.set_color(np.random.uniform([0.5, 0.5, 0.5], [1, 1, 1]))
+        light.set_energy(random.uniform(5000, 10000))
 
-# render the whole pipeline
-data = bproc.renderer.render()
+    # activate depth rendering
+    #bproc.renderer.enable_depth_output(activate_antialiasing=False)
 
-   
+    bproc.renderer.set_light_bounces(max_bounces=200, diffuse_bounces=200, glossy_bounces=200, transmission_bounces=200, transparent_max_bounces=200)
+    # Set max samples for quick rendering
+    bproc.renderer.set_max_amount_of_samples(2)
 
-# Render segmentation masks (per class and per instance)
-data.update(bproc.renderer.render_segmap(map_by=["class", "instance", "name"]))
+    # render the whole pipeline
+    data = bproc.renderer.render()
 
-# write the data to a .hdf5 container
-bproc.writer.write_hdf5(args.output_hdf_dir, data)
+       
 
-#output png image
-for index, image in enumerate(data["colors"]):
-    save_array_as_image(image, "colors", os.path.join(args.output_dir, f"colors_{index}.png"))
-for index, image in enumerate(data["class_segmaps"]):   
-    save_array_as_image(image, "class_segmaps", os.path.join(args.segmaps_output_dir, f"class_segmaps_{index}.png"))
-    
+    # Render segmentation masks (per class and per instance)
+    data.update(bproc.renderer.render_segmap(map_by=["class", "instance", "name"]))
+
+    # write the data to a .hdf5 container
+    #bproc.writer.write_hdf5(args.output_hdf_dir, data)
+
+    #output png image
+    for index, image in enumerate(data["colors"]):
+        save_array_as_image(image, "colors", os.path.join(args.output_dir, f"colors_{index}.png"))
+    for index, image in enumerate(data["class_segmaps"]):   
+        save_array_as_image(image, "class_segmaps", os.path.join(args.segmaps_output_dir, f"class_segmaps_{index}.png"))
+        
