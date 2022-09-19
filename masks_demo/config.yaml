@@ -1,0 +1,6 @@
+# Segmentation Masks Model
+masks:
+  model: 'drn' # Which model to use for inference. Possible values: ['deeplab_resnet']
+  pathWeightsFile: '../data/cleargrasp/cleargrasp-checkpoints/mask_segmentation/checkpoint_mask.pth'
+  inferenceHeight: 256
+  inferenceWidth: 256
