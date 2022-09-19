@@ -11,7 +11,7 @@ import random
 
 parser = argparse.ArgumentParser()
 parser.add_argument('camera', nargs='?', default="examples/resources/camera_positions", help="Path to the camera file")
-parser.add_argument('scene', nargs='?', default="Transparent-bag/segmentation/env_model/test_0909.obj", help="Path to the scene.obj file")
+parser.add_argument('scene', nargs='?', default="Transparent-bag/segmentation/env_model/test_0919.obj", help="Path to the scene.obj file")
 #parser.add_argument('cc_textures_path', nargs='?', default="../../../../media/kattun/HD-PGF-A/Assets/haven_hdri/textures", help="Path to downloaded cc textures")
 parser.add_argument('output_dir', nargs='?', default="Transparent-bag/segmentation/output/color", help="Path to where the final files, will be saved")
 parser.add_argument('segmaps_output_dir', nargs='?', default="Transparent-bag/segmentation/output/segmaps", help="Path to where the final files, will be saved")
@@ -21,7 +21,8 @@ args = parser.parse_args()
 
 bproc.init()
 
- # load the objects into the scene
+# load the objects into the scene at random
+#for n in range(random.randint(1,3)): 
 objs = bproc.loader.load_obj(args.scene)
 
 #id setting
@@ -36,6 +37,27 @@ for i in range(0,len(object_name)):
         obj = bpy.data.objects[object_name[i]]
         obj["category_id"] = 0
         
+
+
+
+# create room
+s = 30
+room_planes = [bproc.object.create_primitive('PLANE', scale=[s, s, 1]),
+            bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[0, -s, s], rotation=[-1.570796, 0, 0], ),
+            bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[0, s, s], rotation=[1.570796, 0, 0]),
+            bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[s, 0, s], rotation=[0, -1.570796, 0]),
+            bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[-s, 0, s], rotation=[0, 1.570796, 0])]
+for plane in room_planes:
+    plane.enable_rigidbody(False, collision_shape='BOX', friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
+
+
+
+
+# Haven Texture and assign to room planes
+haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
+random_h_tex = np.random.choice(haven_textures)
+for plane in room_planes:
+        plane.replace_materials(random_h_tex)
 
 
 # five camera poses
@@ -57,27 +79,6 @@ for i in range(5):
     cam2world_matrix = bproc.math.build_transformation_mat(location, rotation_matrix)
     bproc.camera.add_camera_pose(cam2world_matrix)
     
-
-
-    # create room
-    s = 30
-    room_planes = [bproc.object.create_primitive('PLANE', scale=[s, s, 1]),
-                bproc.object.create_primitive('PLANE', scale=[s, s, 1], location[i]=[0, -s, s], rotation=[-1.570796, 0, 0], ),
-                bproc.object.create_primitive('PLANE', scale=[s, s, 1], location[i]=[0, s, s], rotation=[1.570796, 0, 0]),
-                bproc.object.create_primitive('PLANE', scale=[s, s, 1], location[i]=[s, 0, s], rotation=[0, -1.570796, 0]),
-                bproc.object.create_primitive('PLANE', scale=[s, s, 1], location[i]=[-s, 0, s], rotation=[0, 1.570796, 0])]
-    for plane in room_planes:
-        plane.enable_rigidbody(False, collision_shape='BOX', friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
-
-
-
-
-    # Haven Texture and assign to room planes
-    haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
-    random_h_tex = np.random.choice(haven_textures)
-    for plane in room_planes:
-            plane.replace_materials(random_h_tex, frame = 1)
-
     for n in range(random.randint(1,2)):
         # define a light and set its location and energy level
         light = bproc.types.Light()
@@ -92,7 +93,9 @@ for i in range(5):
 bpy.context.scene.view_layers["ViewLayer"].use_pass_shadow = True
 bpy.context.scene.view_layers["ViewLayer"].use_pass_ambient_occlusion = True
 bpy.context.scene.view_layers["ViewLayer"].use_pass_glossy_direct = True
+bpy.context.scene.view_layers["ViewLayer"].use_pass_glossy_indirect = True
 bpy.context.scene.view_layers["ViewLayer"].use_pass_glossy_color = True
+
 #bpy.data.scenes["Scene"].(null) = True
 #bpy.ops.rigidbody.world_add()
 
