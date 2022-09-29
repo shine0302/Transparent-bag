@@ -24,21 +24,26 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   $ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE  
   ~~~
   2.サーバーをリポジトリのリストに登録
+  ~~~
   sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u  
-  
+  ~~~
   3.ライブラリのインストール
+  ~~~
   $ sudo apt-get install librealsense2-dkms               
   $ sudo apt-get install librealsense2-utils
-  
+  ~~~
   4.開発者用ツール＆デバックツールのインストール
+  ~~~
   $ sudo apt-get install librealsense2-dev               
   $ sudo apt-get install librealsense2-dbg
-  
-  5.一応
+  ~~~
+  5.一応パッケージの更新
+  ~~~
   $sudo apt update
   $sudo apt upgrade
-  
+  ~~~
   6.RealSense使えるかの確認
+    付くかどうか確認できたらOK
   ~~~
   $ realsense-viewer
   ~~~
