@@ -10,10 +10,11 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
 
 3．諸々設定 
 ~~~
-    $ sudo apt-get install libhdf5-100 libhdf5-serial-dev libhdf5-dev libhdf5-cpp-100　　　　
+    $ sudo apt-get install libhdf5-103 libhdf5-serial-dev libhdf5-dev libhdf5-cpp-103　　　
     $ sudo apt install libopenexr-dev zlib1g-dev openexr  
     $ sudo apt install xorg-dev  
     $ sudo apt install libglfw3-dev  
+    $ sudo apt-get install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
 ~~~    
 4.LibRealSenseのインストール  
 詳細については公式の説明を参照してください  
@@ -36,6 +37,9 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   5.一応
   $sudo apt update
   $sudo apt upgrade
+  
+  6.RealSense使えるかの確認
+  $ realsense-viewer
 ~~~
 
 ５．ClearGraspの準備
