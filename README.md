@@ -19,10 +19,10 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
 4.LibRealSenseのインストール  
 詳細については公式の説明を参照してください  
 [LibRealSense公式ページ](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md)  
-~~~
   1.サーバー公開鍵の設定  
+  ~~~
   $ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE  
-  
+  ~~~
   2.サーバーをリポジトリのリストに登録
   sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u  
   
@@ -39,8 +39,9 @@ ClearGraspのページに記載されている方法ではうまくいかなか�
   $sudo apt upgrade
   
   6.RealSense使えるかの確認
+  ~~~
   $ realsense-viewer
-~~~
+  ~~~
 
 ５．ClearGraspの準備
 
