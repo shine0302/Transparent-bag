@@ -24,37 +24,60 @@ bproc.init()
 bpy.context.scene.view_layers["ViewLayer"].use_pass_shadow = True
 bpy.context.scene.view_layers["ViewLayer"].use_pass_ambient_occlusion = True
 bpy.context.scene.view_layers["ViewLayer"].use_pass_glossy_direct = True
-bpy.context.scene.view_layers["ViewLayer"].use_pass_glossy_indirect = True
+#bpy.context.scene.view_layers["ViewLayer"].use_pass_glossy_indirect = True
 bpy.context.scene.view_layers["ViewLayer"].use_pass_glossy_color = True
 
 
-# load the objects into the scene at random
-#for n in range(random.randint(1,3)): 
-objs = bproc.loader.load_obj(args.scene)
-
-#id setting
-object =  list(bpy.data.objects)
-object_name = bpy.data.objects.keys()
-for i in range(0,len(object_name)):
-    if "bag" in str(object_name[i]):
-        obj = bpy.data.objects[object_name[i]]
-        obj["category_id"] = 1
-    
-    else :
-        obj = bpy.data.objects[object_name[i]]
-        obj["category_id"] = 0
+def filename_setting(file_len):
+    if  file_len < 10:
+        str_pl = "0000" + str(file_len+1)
+    if 10 <= file_len < 100:
+        str_pl = "000" + str(file_len+1)
+    if 100 <= file_len < 1000:
+        str_pl = "00" + str(file_len+1)
+    if 1000 <= file_len < 10000:
+        str_pl = "0" + str(file_len+1)   
+        
+    return str_pl
+  
 
 
 # five camera poses
-for i in range(1):
-    bproc.utility.reset_keyframes()
+for i in range(5):
     #object_setting
-    for set_obj in range(random.randint(1,3)):
+    for set_obj in range(1,3):
+        # load the objects into the scene at random
+        objs = bproc.loader.load_obj(args.scene)
+
+         #id setting
+        object =  list(bpy.data.objects)
+        object_name = bpy.data.objects.keys()
+        for n in range(0,len(object_name)):
+            if "bag" in str(object_name[n]):
+                obj = bpy.data.objects[object_name[n]]
+                obj["category_id"] = 1
+
+            else :
+                obj = bpy.data.objects[object_name[n]]
+                obj["category_id"] = 0
+
         rand_x = random.randint(-10,10)
         rand_y = random.randint(-10,10)
         objs[0].set_location(location = [rand_x,rand_y,0], frame = i)
         objs[1].set_location(location = [rand_x,rand_y,0], frame = i)
+     
+    # create room
+    s = 50
+    room_planes = [bproc.object.create_primitive('PLANE', scale=[s, s, 1]),
+               bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[0, -s, s], rotation=[-1.570796, 0, 0] ),
+               bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[0, s, s], rotation=[1.570796, 0, 0]),
+               bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[s, 0, s], rotation=[0, -1.570796, 0]),
+               bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[-s, 0, s], rotation=[0, 1.570796, 0])]
+    for plane in room_planes:
+        plane.enable_rigidbody(False, collision_shape='BOX', friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
         
+   
+
     # define the camera intrinsics
     bproc.camera.set_resolution(1920, 1080)
 
@@ -62,7 +85,7 @@ for i in range(1):
     poi = bproc.object.compute_poi(objs)
         
     # Sample random camera location above objects
-    location = np.random.uniform([-20, -20, 10], [20, 20, 20])
+    location = np.random.uniform([-s, -s, s], [s, s, s])
     # Compute rotation based on vector going from location towards poi
     poi_drift = bproc.sampler.random_walk(total_length = 25, dims = 3, step_magnitude = 0.005, 
                                       window_size = 5, interval = [-0.03, 0.03], distribution = 'uniform')
@@ -72,37 +95,26 @@ for i in range(1):
     cam2world_matrix = bproc.math.build_transformation_mat(location, rotation_matrix)
     bproc.camera.add_camera_pose(cam2world_matrix)
     
-    for n in range(random.randint(1,2)):
+    for n in range(random.randint(1,5)):
         # define a light and set its location and energy level
         light = bproc.types.Light()
         light.set_type("POINT")
-        light.set_location(np.random.uniform([-20,-20,10],[20,20,20]),frame=i)
+        light.set_location(np.random.uniform([-s,-s,s],[s,s,s]),frame=i)
         # Randomly set the color and energy
         light.set_color(np.random.uniform([0.5, 0.5, 0.5], [1, 1, 1]), frame=i)
-        light.set_energy(random.uniform(1000, 10000),frame=i)
+        light.set_energy(random.uniform(5000, 10000),frame=i)
         
     
-   
-    # create room
-    s = 30
-    room_planes = [bproc.object.create_primitive('PLANE', scale=[s, s, 1]),
-               bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[0, -s, s], rotation=[-1.570796, 0, 0] ),
-               bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[0, s, s], rotation=[1.570796, 0, 0]),
-               bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[s, 0, s], rotation=[0, -1.570796, 0]),
-               bproc.object.create_primitive('PLANE', scale=[s, s, 1], location=[-s, 0, s], rotation=[0, 1.570796, 0])]
-    for plane in room_planes:
-        plane.enable_rigidbody(False, collision_shape='BOX', friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
-
+ 
     
      # Haven Texture and assign to room planes
     haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
     random_h_tex = np.random.choice(haven_textures)
     for plane in room_planes:
         plane.replace_materials(random_h_tex)
+        #bproc.python.utility.Utility.Utility.insert_keyframe(plane,data_path, frame = i)
            
 
-    #bpy.ops.object.select_all(action='SELECT')
-    #bpy.ops.object.delete(use_global=False)
         
     # activate depth rendering
     #bproc.renderer.enable_depth_output(activate_antialiasing=False)
@@ -114,17 +126,27 @@ for i in range(1):
     # render the whole pipeline
     data = bproc.renderer.render()
 
-       
-
     # Render segmentation masks (per class and per instance)
     data.update(bproc.renderer.render_segmap(map_by=["class", "instance", "name"]))
 
     # write the data to a .hdf5 container
     #bproc.writer.write_hdf5(args.output_hdf_dir, data)
-
+    
+    file_name = filename_setting(i)
+    
     #output png image
     for index, image in enumerate(data["colors"]):
-        save_array_as_image(image, "colors", os.path.join(args.output_dir, f"colors_{index}.png"))
+        save_array_as_image(image, "colors", os.path.join(args.output_dir, "colors_" + str(file_name) +".png"))
     for index, image in enumerate(data["class_segmaps"]):   
-        save_array_as_image(image, "class_segmaps", os.path.join(args.segmaps_output_dir, f"class_segmaps_{index}.png"))
-        
+        save_array_as_image(image, "class_segmaps", os.path.join(args.segmaps_output_dir, "class_segmaps_" + str(file_name) + ".png"))
+    
+    bproc.utility.reset_keyframes()
+    bproc.clean_up()
+    
+    # Sets background color
+    import blenderproc.python.renderer.RendererUtility as RendererUtility
+    horizon_color: list = [0.05, 0.05, 0.05]
+    RendererUtility.set_world_background(horizon_color)
+    world = bpy.data.worlds['World']
+    world["category_id"] = 0
+
