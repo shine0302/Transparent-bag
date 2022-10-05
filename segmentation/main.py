@@ -6,6 +6,8 @@ from blenderproc.scripts.saveAsImg import save_array_as_image
 import debugpy
 import bpy
 import random
+import cv2
+import matplotlib.pyplot as plt
 
 
 parser = argparse.ArgumentParser()
@@ -30,20 +32,20 @@ bpy.context.scene.view_layers["ViewLayer"].use_pass_glossy_color = True
 
 def filename_setting(file_len):
     if  file_len < 10:
-        str_pl = "0000" + str(file_len+1)
+        str_pl = "00000000" + str(file_len+1)
     if 10 <= file_len < 100:
-        str_pl = "000" + str(file_len+1)
+        str_pl = "0000000" + str(file_len+1)
     if 100 <= file_len < 1000:
-        str_pl = "00" + str(file_len+1)
+        str_pl = "000000" + str(file_len+1)
     if 1000 <= file_len < 10000:
-        str_pl = "0" + str(file_len+1)   
+        str_pl = "00000" + str(file_len+1)   
         
     return str_pl
   
 
 
 # five camera poses
-for i in range(5):
+for i in range(100):
     #object_setting
     for set_obj in range(1,3):
         # load the objects into the scene at random
@@ -60,12 +62,15 @@ for i in range(5):
             else :
                 obj = bpy.data.objects[object_name[n]]
                 obj["category_id"] = 0
-
+        
+    
         rand_x = random.randint(-10,10)
         rand_y = random.randint(-10,10)
-        objs[0].set_location(location = [rand_x,rand_y,0], frame = i)
-        objs[1].set_location(location = [rand_x,rand_y,0], frame = i)
-     
+        euler_y = random.uniform(-1,1)
+        for put in range(len(objs)):
+            objs[put].set_location(location = [rand_x,rand_y,0], frame = i)
+            objs[put].set_rotation_euler([3.14/2, 0 , euler_y])
+         
     # create room
     s = 50
     room_planes = [bproc.object.create_primitive('PLANE', scale=[s, s, 1]),
@@ -79,7 +84,7 @@ for i in range(5):
    
 
     # define the camera intrinsics
-    bproc.camera.set_resolution(1920, 1080)
+    bproc.camera.set_resolution(1024, 576)
 
     # Find point of interest, all cam poses should look towards it
     poi = bproc.object.compute_poi(objs)
@@ -105,16 +110,14 @@ for i in range(5):
         light.set_energy(random.uniform(5000, 10000),frame=i)
         
     
- 
     
-     # Haven Texture and assign to room planes
+    # Haven Texture and assign to room planes
+    #road Heaven textures
     haven_textures = bproc.loader.load_haven_mat(args.haven_textures_path)
     random_h_tex = np.random.choice(haven_textures)
     for plane in room_planes:
         plane.replace_materials(random_h_tex)
-        #bproc.python.utility.Utility.Utility.insert_keyframe(plane,data_path, frame = i)
-           
-
+        
         
     # activate depth rendering
     #bproc.renderer.enable_depth_output(activate_antialiasing=False)
@@ -124,21 +127,27 @@ for i in range(5):
     bproc.renderer.set_max_amount_of_samples(2)
 
     # render the whole pipeline
+    bproc.renderer.map_file_format_to_file_ending(file_format = "JPEG")
     data = bproc.renderer.render()
 
     # Render segmentation masks (per class and per instance)
-    data.update(bproc.renderer.render_segmap(map_by=["class", "instance", "name"]))
+    data.update(bproc.renderer.render_segmap(map_by=["class", "instance", "name"], temp_dir = "Transparent-bag/segmentation/output/tmp"))
 
     # write the data to a .hdf5 container
     #bproc.writer.write_hdf5(args.output_hdf_dir, data)
     
     file_name = filename_setting(i)
     
-    #output png image
+    #output jpeg or png image
     for index, image in enumerate(data["colors"]):
-        save_array_as_image(image, "colors", os.path.join(args.output_dir, "colors_" + str(file_name) +".png"))
+        save_array_as_image(image, "colors", os.path.join(args.output_dir,str(file_name)+ "colors"  +".png"))
     for index, image in enumerate(data["class_segmaps"]):   
-        save_array_as_image(image, "class_segmaps", os.path.join(args.segmaps_output_dir, "class_segmaps_" + str(file_name) + ".png"))
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR) #グレースケール
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        #image = 0.299 * im[:, :, 2] + 0.587 * im[:, :, 1] + 0.114 * im[:, :, 0]
+        img = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        print(img.shape)
+        save_array_as_image(img, "class_segmaps", os.path.join(args.segmaps_output_dir,str(file_name) +"segmentation-masks"  + ".png"))
     
     bproc.utility.reset_keyframes()
     bproc.clean_up()
@@ -149,4 +158,5 @@ for i in range(5):
     RendererUtility.set_world_background(horizon_color)
     world = bpy.data.worlds['World']
     world["category_id"] = 0
+    
 
