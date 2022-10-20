@@ -3,7 +3,8 @@
 ## ClearGraspの設定
 ClearGraspのページに記載されている方法ではうまくいかなかったためいくつかの変更を加えました  
 
-1．実行環境：windows10,ubutu18.04,VirtualBox16.1.10,Intel RealsenseD435  
+1．実行環境1：windows10,ubutu18.04,VirtualBox16.1.10,Intel RealsenseD435   
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;2：Ubuntu20.04,Intel RealsenseD435
 
 2．参考ページ
 [ClearGrasp](https://github.com/Shreeyak/cleargrasp) (https://github.com/Shreeyak/cleargrasp)  
