@@ -3,7 +3,6 @@ import argparse
 import numpy as np
 import os
 from blenderproc.scripts.saveAsImg import save_array_as_image
-import debugpy
 import bpy
 import random
 import cv2
@@ -16,10 +15,10 @@ sys.path.append(os.path.abspath("Transparent-bag"))
 from config import rendering_count
 
 parser = argparse.ArgumentParser()
-parser.add_argument('output_dir', nargs='?', default="/../../media/kattun/HD-PGF-A/bag-img-data/spacer-bag/rgb-imgs", help="Path to where the final files, will be saved")
+parser.add_argument('output_dir', nargs='?', default="/../../media/kattun/HD-PGF-A/bag-img-data/spacer-bag-val/rgb-imgs", help="Path to where the final files, will be saved")
 #parser.add_argument('output_dir', nargs='?', default="Transparent-bag/segmentation/output/rgb-imgs", help="Path to where the final files, will be saved")
-parser.add_argument('segmaps_output_dir', nargs='?', default="/../../media/kattun/HD-PGF-A/bag-img-data/spacer-bag/segmentation-masks",  help="Path to where the final files, will be saved")
-parser.add_argument('json_output_dir', nargs='?', default="/../../media/kattun/HD-PGF-A/bag-img-data/spacer-bag/json-files",  help="Path to where the final files, will be saved")
+parser.add_argument('segmaps_output_dir', nargs='?', default="/../../media/kattun/HD-PGF-A/bag-img-data/spacer-bag-val/segmentation-masks",  help="Path to where the final files, will be saved")
+parser.add_argument('json_output_dir', nargs='?', default="/../../media/kattun/HD-PGF-A/bag-img-data/spacer-bag-val/json-files",  help="Path to where the final files, will be saved")
 #parser.add_argument('segmaps_output_dir', nargs='?', default="Transparent-bag/segmentation/output/segmaps",  help="Path to where the final files, will be saved")
 parser.add_argument('scene', nargs='?', default="Transparent-bag/segmentation/env_model/test_0919.obj", help="Path to the scene.obj file")
 #parser.add_argument('output_hdf_dir', nargs='?', default="Transparent-bag/segmentation/output/hdf", help="Path to where the final files, will be saved")
