@@ -1,0 +1,11 @@
+idx,category_id,name,channel_class,channel_instance
+0,0,World,0,1
+1,1,bag,0,1
+4,1,bag4,0,1
+6,1,bag6,0,1
+7,1,bag7,0,1
+8,1,bag8,0,1
+10,0,円柱.009,0,1
+11,0,Plane,0,1
+14,0,Plane.003,0,1
+16,0,Plane.005,0,1
